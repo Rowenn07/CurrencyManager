@@ -81,7 +81,7 @@ public class CurrencyService : ICurrencyService
         try
         {
             // Save the conversion history to the database.
-            _context.ConversionHistories.Add(conversion);
+            _context.ConversionHistory.Add(conversion);
             await _context.SaveChangesAsync();
         }
         catch (Exception ex)
@@ -101,7 +101,7 @@ public class CurrencyService : ICurrencyService
     /// <returns>A collection of conversion history records.</returns>
     public async Task<IEnumerable<ConversionHistory>> GetConversionHistory()
     {
-        return await _context.ConversionHistories.ToListAsync();
+        return await _context.ConversionHistory.ToListAsync();
     }
 }
 

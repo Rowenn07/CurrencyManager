@@ -28,7 +28,7 @@ namespace CurrencyManager.Controllers
         {
             try
             {
-                return await _context.ConversionHistories.ToListAsync();
+                return await _context.ConversionHistory.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -47,7 +47,7 @@ namespace CurrencyManager.Controllers
         {
             try
             {
-                var conversionHistory = await _context.ConversionHistories.FindAsync(id);
+                var conversionHistory = await _context.ConversionHistory.FindAsync(id);
 
                 if (conversionHistory == null)
                 {
@@ -73,7 +73,7 @@ namespace CurrencyManager.Controllers
         {
             try
             {
-                _context.ConversionHistories.Add(conversionHistory);
+                _context.ConversionHistory.Add(conversionHistory);
                 await _context.SaveChangesAsync();
 
                 return CreatedAtAction(nameof(GetConversionHistory), new { id = conversionHistory.Id }, conversionHistory);
@@ -136,13 +136,13 @@ namespace CurrencyManager.Controllers
         {
             try
             {
-                var conversionHistory = await _context.ConversionHistories.FindAsync(id);
+                var conversionHistory = await _context.ConversionHistory.FindAsync(id);
                 if (conversionHistory == null)
                 {
                     return NotFound($"ConversionHistory with ID {id} not found.");
                 }
 
-                _context.ConversionHistories.Remove(conversionHistory);
+                _context.ConversionHistory.Remove(conversionHistory);
                 await _context.SaveChangesAsync();
 
                 return NoContent();
@@ -161,7 +161,7 @@ namespace CurrencyManager.Controllers
         /// <returns>True if the record exists, otherwise false.</returns>
         private bool ConversionHistoryExists(int id)
         {
-            return _context.ConversionHistories.Any(e => e.Id == id);
+            return _context.ConversionHistory.Any(e => e.Id == id);
         }
     }
 }

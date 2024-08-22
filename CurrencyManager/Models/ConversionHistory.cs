@@ -50,6 +50,6 @@ public class MyDbContext : DbContext
     /// <summary>
     /// Gets or sets the DbSet for conversion history records.
     /// </summary>
-    public DbSet<ConversionHistory> ConversionHistories { get; set; }
+    public DbSet<ConversionHistory> ConversionHistory { get; set; }
 }
    
