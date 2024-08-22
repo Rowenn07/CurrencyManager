@@ -33,10 +33,35 @@ public class CurrencyService : ICurrencyService
     /// <returns>The converted amount as a decimal.</returns>
     public async Task<decimal> ConvertCurrency(string baseCurrency, string targetCurrency, decimal amount)
     {
-        // Fetch the latest exchange rates from the API.
-        var client = _httpClientFactory.CreateClient();
-        var response = await client.GetStringAsync("https://openexchangerates.org/api/latest.json?app_id=7b858eb7976442abb4497106a55f0457");
-        var rateData = JsonConvert.DeserializeObject<RateData>(response);
+        // Check if the exchange rates are in the cache.
+        var cacheKey = "exchange_rates";
+        var cachedRates = await _cache.GetStringAsync(cacheKey);
+        RateData rateData = null;
+
+        if (!string.IsNullOrEmpty(cachedRates))
+        {
+            rateData = JsonConvert.DeserializeObject<RateData>(cachedRates);
+        }
+
+        if (rateData == null)
+        {
+            // Fetch the latest exchange rates from the API.
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetStringAsync("https://openexchangerates.org/api/latest.json?app_id=7b858eb7976442abb4497106a55f0457");
+            rateData = JsonConvert.DeserializeObject<RateData>(response);
+
+            // Cache the exchange rates for 15 minutes.
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+            };
+            await _cache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(rateData), cacheOptions);
+        }
+
+        if (rateData == null || !rateData.Rates.ContainsKey(baseCurrency) || !rateData.Rates.ContainsKey(targetCurrency))
+        {
+            throw new InvalidOperationException("Exchange rates data is not available.");
+        }
 
         // Calculate the conversion rate.
         var baseRate = rateData.Rates[baseCurrency];
@@ -53,9 +78,19 @@ public class CurrencyService : ICurrencyService
             Timestamp = DateTime.UtcNow
         };
 
-        // Save the conversion history to the database.
-        //_context.ConversionHistories.Add(conversion);
-        //await _context.SaveChangesAsync();
+        try
+        {
+            // Save the conversion history to the database.
+            _context.ConversionHistories.Add(conversion);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log the exception details.
+            Console.WriteLine($"An error occurred while saving the conversion history: {ex.Message}");
+
+            throw;
+        }
 
         return conversion.ConvertedAmount;
     }
