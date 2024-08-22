@@ -11,10 +11,16 @@ StackExchange.Redis
 Microsoft.EntityFrameworkCore
 Pomelo.EntityFrameworkCore.MySql
 Newtonsoft.Json
+MySql.Data
+Moq
+xunit.extensibility.core
+xunit.assert
 
 - [Usage](#usage)
 ## Usage
-1. Update the `appsettings.json` file with your database connection string and API keys.
+1. Ensure MySQL db is setup and running.
+1. Update the `appsettings.json` file with your database connection string
+2. Ensure REDIS is setup and started.
 2. Run the application
 
 - [API](#api)
@@ -27,12 +33,9 @@ returns the currency conversion history
 
 3. CRUD operations for currency conversion history
 
-4. Schema for currency conversion history:
+4. Schema for currency conversion history
 
 Note:
-Project unfinished.
-Redis implementation with database commented out until fixed.
-
-To-do
-Complete Redis and MySQL implementation with dev testing.
-Code cleanup
+In progress.
+Final tests on database.
+Code cleanup.
